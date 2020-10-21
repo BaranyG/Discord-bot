@@ -1,5 +1,3 @@
-const killuaToken = 'NzMwMTA4NjgyNzA4MTg5MjQ3.XwTLoQ.sTHp4ejC1ZKBH5lW80957Ggvcyw'; // Killua bot - TOKEN
-const BGToken = 'NzMwMTQyNjM2MjI4NDc3MDE4.XxV1Kg.Cr9PqxfHylu4DH6C7ucIjfBT-HM'; // BaranyG bot - TOKEN
 const Discord  = require('discord.js');       //Discord funkciók
 const fs       = require('fs');               //Fájlkezelés funkciók
 const { jsonReader } = require('./functions.js');
