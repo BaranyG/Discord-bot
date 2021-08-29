@@ -1,7 +1,7 @@
 const fs       = require('fs');          //Fájlkezelő parancsok importálása
 module.exports = {
     name: 'modosit',
-    execute(client, message, args, func){
+    execute(Discord, client, func, message, args){
         try{
             if(args[0]===undefined){ hibaUzenetDelete("Adj meg egy felhasználót: @User"); return; }
             if (!args[0].startsWith('<@') && !args[0].endsWith('>')) { hibaUzenetDelete("Error: Nem felhasználót adtál meg."); return; }

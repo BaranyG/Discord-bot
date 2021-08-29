@@ -1,7 +1,7 @@
 const fs       = require('fs');          //Fájlkezelő parancsok importálása
 module.exports = {
     name: 'botszoba',
-    execute(client, message, args, func){
+    execute(Discord, client, func, message, args){
         try{
             let Szerver = {
                 ServerID: message.guild.id.toString(),
@@ -21,7 +21,7 @@ module.exports = {
                         }else if(database.Szerverek[i].BotChannelID !== Szerver.BotChannelID){
                             database.Szerverek[i].BotChannelID = Szerver.BotChannelID;
                             database.Szerverek[i].BotChannelName = Szerver.BotChannelName;
-                            fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
+                            fs.writeFile('../database.json', JSON.stringify(database, null, 4), function(err){
                                 if(err){ hibaUzenetDelete("Error: Botszoba - Writing File"); console.log("Error: Botszoba - Writing file", err); return; }
                                 message.reply("Botszoba sikeresen módosítva");
                                 return;
@@ -30,9 +30,9 @@ module.exports = {
                         }
                     }
                 }
-                
+        
                 database.Szerverek.push(Szerver);
-                fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
+                fs.writeFile('../database.json', JSON.stringify(database, null, 4), function(err){
                     if(err){ hibaUzenetDelete("Error: Botszoba - Writing file #2"); console.log("Error: Botszoba - Writing file #2", err); return; }
                     message.reply("Botszoba sikeresen beállítva!");
                     return;
@@ -40,8 +40,6 @@ module.exports = {
             });
         }catch(error){ hibaUzenetDelete("Error: Botszoba command"); console.log("Error: Botszoba command", error); return; }
         
-
-
         function hibaUzenetDelete(uzenet){
             message.reply(uzenet).then(msg => {
                 msg.delete({ timeout: 1000 * 60 * 2 });

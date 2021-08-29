@@ -1,7 +1,7 @@
 const fs       = require('fs');          //Fájlkezelő parancsok importálása
 module.exports = {
     name: 'role',
-    execute(client, message, args, func){
+    execute(Discord, client, func, message, args){
         try{
             if(args[0]===undefined){ hibaUzenetDelete("Adj meg egy rolet: @Role"); return; }
             if (!args[0].startsWith('<@&') && !args[0].endsWith('>')) { hibaUzenetDelete("Error: Nem rolet adtál meg."); return; }

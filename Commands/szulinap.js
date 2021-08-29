@@ -1,7 +1,8 @@
 const fs       = require('fs');          //Fájlkezelő parancsok importálása
 module.exports = {
     name: 'szulinap',
-    execute(client, message, args, func){
+    description: 'Beolvassa a születésnapot adatbázisba',
+    execute(Discord, client, func, message, args){
         try{
             if(args[0]===undefined){ message.channel.send("'!szülinap [születési dátum]' vagy '!szülinap formátum' "); return; }
             else if(args[0] === "formátum"){
@@ -39,10 +40,10 @@ module.exports = {
         }
         function hibaUzenetDelete(uzenet){
             message.reply(uzenet).then(msg => {
-                msg.delete({ timeout: 1000 * 60 * 2 });
+                msg.delete({ timeout: 1000 * 60 * 60 });
             });
             message.fetch(message.id).then(msg => {
-                msg.delete({ timeout: 100 });
+                msg.delete({ timeout: 1000 * 60 * 60 });
             });
         }
     }
