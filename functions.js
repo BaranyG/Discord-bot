@@ -246,7 +246,12 @@ module.exports = {
                             if(szerver == database.Szerverek[j].ServerID)
                                 tarsalgo = szerver.channels.cache.get(database.Szerverek[j].BotChannelID);
                         }
-                        
+                        if(tag.user.username !== database.Tagok[i].Username){
+                            database.Tagok[i].Username = tag.user.username;
+                        }
+                        //fs.write ide kell majd ****************************
+
+
                         //Üzenet
                         let exampleEmbed = new Discord.MessageEmbed()
                         .setColor('#f1c40f')
