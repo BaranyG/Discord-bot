@@ -1,27 +1,27 @@
-const fs       = require('fs');          //Fájlkezelő importálása
-const http     = require('http');        //HTTP importálása
-const request  = require('request');     //request importálása
-const Discord = require('discord.js');
-const client = require('./index.js');
+const fs       = require('fs');
+const http     = require('http');
+const request  = require('request');
+const Discord  = require('discord.js');
+const client   = require('./index.js');
 module.exports = {
     jsonReader: function(filepath, callback){
         fs.readFile(filepath, 'utf8', (err, data) => {
-            if (err) {  
-                console.log("Error #F1: File read failed:"); 
+            if (err) {
+                console.log("Error #F1: File read failed:");
                 return callback && callback(err);
             }
             try{
                 const object = JSON.parse(data);
                 return callback && callback(null, object);
-            }catch(error){ 
-                console.log("Error: parsing the JSON string in jsonReader:"); 
+            }catch(error){
+                console.log("Error: parsing the JSON string in jsonReader:");
                 return callback && callback(err);
             }
         });
     },
 
     formatDate: function(datum){
-        //Ezt nem kell magyarázni ez tök könnyű 
+        //Ezt nem kell magyarázni ez tök könnyű
         //(Ellenőrzi a dátum formátumát, hogy megfelelő-e, és leszűkíti az érvényes dátumok számát)
         if(/^([1-2](9|0)[0-9]{2}\.)?[0-1]?[0-9]\.[0-3]?[0-9]\.?$/.test(datum))
             return true;
@@ -37,31 +37,31 @@ module.exports = {
         let index = this.getDateIndex(datum);
         if(index==2){
             //1920-2010 intervallum
-            if(!(1920 <= datumArray[0] && datumArray[0] <= 2010)) 
+            if(!(1920 <= datumArray[0] && datumArray[0] <= 2010))
                 return false;
             if(datumArray[1] == 2){
                 //Szököév ellenőrzés
                 if(datumArray[0] % 4 == 0){
                     //ha szökőév febr. 1-29
-                    if(!(0 < datumArray[2] && datumArray[2] < 30)) 
+                    if(!(0 < datumArray[2] && datumArray[2] < 30))
                         return false;
                 }else {
                     //ha nem szökőév, febr. 1-28
-                    if(!(0 < datumArray[2] && datumArray[2] < 29)) 
-                        return false; 
+                    if(!(0 < datumArray[2] && datumArray[2] < 29))
+                        return false;
                 }
             }
         }
         if(index==1){
             //Ha nincs megadva év -> feb. 1-29 nap
-            if(datumArray[0] == 2) 
-                if(!(0 < datumArray[1] < 30)) 
+            if(datumArray[0] == 2)
+                if(!(0 < datumArray[1] < 30))
                 return false;
             //1-12 lehet a hónap
-            if(!(0 < datumArray[index-1] && datumArray[index-1] < 13)) 
-                return false;    
+            if(!(0 < datumArray[index-1] && datumArray[index-1] < 13))
+                return false;
             //1-31 lehet a nap
-            if(!(0 < datumArray[index] && datumArray[index] < 32)) 
+            if(!(0 < datumArray[index] && datumArray[index] < 32))
                 return false;
             //ápr. jún. szep. és nov. -ben 1-30 nap
             if(/(4|6|9|11)/.test(datumArray[index-1]))
@@ -73,14 +73,14 @@ module.exports = {
     },
 
     getDate: function(datum){
-        if(datum==undefined){ 
+        if(datum==undefined){
             console.log("getDate function undefined paramétert kap");
             return;
         }
         //Adat szöveggé alakítása, hiba elkerülése érdekében
         datum = datum.toString();
         //Eltünteti végéről a pontot ha van
-        if(datum.endsWith('.')) 
+        if(datum.endsWith('.'))
             datum.slice(0,-1);
         //(Év,) hónap, napra bontja az adatot
         let datumArray = datum.split('.');
@@ -191,6 +191,8 @@ module.exports = {
     
     hasNumber: function (myString) { return /\d/.test(myString); },
 
+    emoji: function emoji (id) { return client.emojis.cache.get(id).toString(); },
+
     roleAdd: function(Discord, client) {
         try{
             this.WorldTime_API((err, APIdate) =>{
@@ -248,8 +250,16 @@ module.exports = {
                         }
                         if(tag.user.username !== database.Tagok[i].Username){
                             database.Tagok[i].Username = tag.user.username;
+                            fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
+                                if(err){ 
+                                    hibaUzenetDelete("Error: Username - Writing file #2"); 
+                                    console.log("Error: Username - Writing file #2", err); 
+                                    return; 
+                                }
+                                return;
+                            });
                         }
-                        //fs.write ide kell majd ****************************
+                        
 
 
                         //Üzenet

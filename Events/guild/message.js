@@ -1,7 +1,7 @@
 module.exports = (Discord, client, func, message) => {
      
     const prefix = require('../../config.js').prefix;
-    function emoji (id) { return client.emojis.cache.get(id).toString(); }
+    
     
     //Command dolgok
     if(!message.content.startsWith(prefix) || message.author.bot) return;
@@ -14,8 +14,9 @@ module.exports = (Discord, client, func, message) => {
     if(command) command.execute(Discord, client, func, message, args);
     
     //Frissít parancs
-    if(cmd==='frissít'){
-        func.roleAdd(); message.channel.send('Frissítve!');
+    if(cmd==='refresh' || cmd==='reload'){
+        func.roleAdd();
+        message.channel.send('Frissítve!');
         return;
     }
 

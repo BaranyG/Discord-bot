@@ -13,8 +13,8 @@ module.exports = {
                 if(err){ hibaUzenetDelete("Error: Botszoba - Reading File"); console.log("Error: Botszoba - Reading file:", err); return; }
                 for(let i = 0; i < database.Szerverek.length; i++){
                     if(database.Szerverek[i].ServerID === Szerver.ServerID){
-                        if(database.Szerverek[i].BotChannelID === Szerver.BotChannelID) { 
-                            message.reply("Ez a szoba már meg van adva botszobának!"); 
+                        if(database.Szerverek[i].BotChannelID === Szerver.BotChannelID) {
+                            message.reply("Ez a szoba már meg van adva botszobának!");
                             if(database.Szerverek[i].BotChannelName !== Szerver.BotChannelName)
                                 database.Szerverek[i].BotChannelName = Szerver.BotChannelName;
                             return;
@@ -26,13 +26,13 @@ module.exports = {
                                 message.reply("Botszoba sikeresen módosítva");
                                 return;
                             });
-                            return; 
+                            return;
                         }
                     }
                 }
         
                 database.Szerverek.push(Szerver);
-                fs.writeFile('../database.json', JSON.stringify(database, null, 4), function(err){
+                fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
                     if(err){ hibaUzenetDelete("Error: Botszoba - Writing file #2"); console.log("Error: Botszoba - Writing file #2", err); return; }
                     message.reply("Botszoba sikeresen beállítva!");
                     return;
