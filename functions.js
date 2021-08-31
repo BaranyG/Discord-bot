@@ -1,114 +1,166 @@
-const client   = require("./index.js");  //Discord kliens importálása a main fájlból
-const fs       = require('fs');          //Fájlkezelő parancsok importálása
+const fs       = require('fs');          //Fájlkezelő importálása
 const http     = require('http');        //HTTP importálása
 const request  = require('request');     //request importálása
+const Discord = require('discord.js');
+const client = require('./index.js');
 module.exports = {
     jsonReader: function(filepath, callback){
-        fs.stat(filepath, function(err, stat) {
-            fs.readFile(filepath, 'utf8', (err, data) => {
-                if (err) {  
-                    console.log("Error #F1: File read failed:"); 
-                    return callback && callback(err);
-                }
-                try{
-                    const object = JSON.parse(data);
-                    return callback && callback(null, object);
-                }catch(error){ 
-                    console.log("Error: parsing the JSON string in jsonReader:"); 
-                    return callback && callback(err);
-                }
-            });
+        fs.readFile(filepath, 'utf8', (err, data) => {
+            if (err) {  
+                console.log("Error #F1: File read failed:"); 
+                return callback && callback(err);
+            }
+            try{
+                const object = JSON.parse(data);
+                return callback && callback(null, object);
+            }catch(error){ 
+                console.log("Error: parsing the JSON string in jsonReader:"); 
+                return callback && callback(err);
+            }
         });
     },
 
     formatDate: function(datum){
-        if(/^([1-2](9|0)[0-9]{2}\.)?[0-1]?[0-9]\.[0-3]?[0-9]\.?$/.test(datum)) return true; //Ezt nem kell magyarázni ez tök könnyű (Ellenőrzi a dátum formátumát, hogy megfelelő-e, és leszűkíti az érvényes dátumok számát)
+        //Ezt nem kell magyarázni ez tök könnyű 
+        //(Ellenőrzi a dátum formátumát, hogy megfelelő-e, és leszűkíti az érvényes dátumok számát)
+        if(/^([1-2](9|0)[0-9]{2}\.)?[0-1]?[0-9]\.[0-3]?[0-9]\.?$/.test(datum))
+            return true;
         else return false;
     },
 
     validDate: function(datum){
-            datum = this.getDate(datum)                                                 //Dátum formázása
-            let datumArray = datum.split('.');                                          //(Év,) hónap, napra bontja az adatot
-            let index = this.getDateIndex(datum);                                       //Index létrehozása
-            if(index==2){
-                if(!(1920 <= datumArray[0] && datumArray[0] <= 2010)) return false;  //1920-2010 intervallum
-                if(datumArray[1] == 2){                                                 //Szököév ellenőrzés
-                    if(datumArray[0] % 4 == 0){                                         //ha szökőév febr. 1-29
-                        if(!(0 < datumArray[2] && datumArray[2] < 30)) return false;
-                    }else {                                                             //ha nem szökőév, febr. 1-28
-                        if(!(0 < datumArray[2] && datumArray[2] < 29)) return false; 
-                    }
+        //Dátum formázása
+        datum = this.getDate(datum)
+        //(Év,) hónap, napra bontja az adatot
+        let datumArray = datum.split('.');
+        //Index létrehozása
+        let index = this.getDateIndex(datum);
+        if(index==2){
+            //1920-2010 intervallum
+            if(!(1920 <= datumArray[0] && datumArray[0] <= 2010)) 
+                return false;
+            if(datumArray[1] == 2){
+                //Szököév ellenőrzés
+                if(datumArray[0] % 4 == 0){
+                    //ha szökőév febr. 1-29
+                    if(!(0 < datumArray[2] && datumArray[2] < 30)) 
+                        return false;
+                }else {
+                    //ha nem szökőév, febr. 1-28
+                    if(!(0 < datumArray[2] && datumArray[2] < 29)) 
+                        return false; 
                 }
             }
-            if(index==1) 
-                if(datumArray[0] == 2) if(datumArray[1] < 30) ; else return false;          //Ha nincs megadva év -> feb. 1-29 nap
-            if(0 < datumArray[index-1] && datumArray[index-1] < 13) ; else return false;    //1-12 lehet a hónap
-            if(0 < datumArray[index] && datumArray[index] < 32) ; else return false;        //1-31 lehet a nap
-            if(/(4|6|9|11)/.test(datumArray[index-1]))                                      //ápr. jún. szep. és nov. -ben 1-30 nap
-                if(0 < datumArray[index] && datumArray[index] < 31) ; else return false;
-            return true;                                                                    //Igazzal tér vissza, ha érvényes dátum
+        }
+        if(index==1){
+            //Ha nincs megadva év -> feb. 1-29 nap
+            if(datumArray[0] == 2) 
+                if(!(0 < datumArray[1] < 30)) 
+                return false;
+            //1-12 lehet a hónap
+            if(!(0 < datumArray[index-1] && datumArray[index-1] < 13)) 
+                return false;    
+            //1-31 lehet a nap
+            if(!(0 < datumArray[index] && datumArray[index] < 32)) 
+                return false;
+            //ápr. jún. szep. és nov. -ben 1-30 nap
+            if(/(4|6|9|11)/.test(datumArray[index-1]))
+                if(!(0 < datumArray[index] && datumArray[index] < 31))
+                    return false;
+        }
+        //Igazzal tér vissza, ha érvényes dátum
+        return true;
     },
 
     getDate: function(datum){
-        datum = datum.toString();                                               //Adat szöveggé alakítása, hiba elkerülése érdekében
-        if(datum.endsWith('.')) datum.slice(0,-1);                              //Eltünteti végéről a pontot ha van
-        let datumArray = datum.split('.');                                      //(Év,) hónap, napra bontja az adatot
-        let index = this.getDateIndex(datum);                                   //Index létrehozása
+        if(datum==undefined){ 
+            console.log("getDate function undefined paramétert kap");
+            return;
+        }
+        //Adat szöveggé alakítása, hiba elkerülése érdekében
+        datum = datum.toString();
+        //Eltünteti végéről a pontot ha van
+        if(datum.endsWith('.')) 
+            datum.slice(0,-1);
+        //(Év,) hónap, napra bontja az adatot
+        let datumArray = datum.split('.');
+        //Index létrehozása
+        let index = this.getDateIndex(datum);
         if(datumArray[index-1] != 10) 
-            datumArray[index-1] = datumArray[index-1].replace('0', '');         //szükségtelen 0-k eltüntetése
-        if(!/(10|20|30)/.test(datumArray[index])) 
-            datumArray[index] = datumArray[index].replace('0', '');             //szükségtelen 0-k eltüntetése
+            //szükségtelen 0-k eltüntetése
+            datumArray[index-1] = datumArray[index-1].replace('0', '');
+        if(!/(10|20|30)/.test(datumArray[index]))
+            //szükségtelen 0-k eltüntetése
+            datumArray[index] = datumArray[index].replace('0', '');
         if(index==2) 
-            datum = datumArray[0] + '.' + datumArray[1] + '.' + datumArray[2]; //Dátum mentése
+            //Dátum mentése
+            datum = datumArray[0] + '.' + datumArray[1] + '.' + datumArray[2];
         else if(index==1) 
-            datum = datumArray[0] + '.' + datumArray[1];                        //Dátum mentése
-    else return;                                                                //Visszatér üresen, ha az index 0;
-    return datum;                                                               //Visszatérés felülírt dátummal
+            //Dátum mentése
+            datum = datumArray[0] + '.' + datumArray[1];   
+        //Visszatér üresen, ha az index 0;
+        else return;
+        //Visszatérés felülírt dátummal  
+        return datum;
     },
 
     getDateIndex: function(datum){
-        if(/^\d{4}\.\d{1,2}\.\d{1,2}\.?$/.test(datum)) return 2;                    //Ha tartalmaz évet, 2 az index.
-        else if(/^\d{1,2}\.\d{1,2}\.?$/.test(datum)) return 1;                      //Ha nem tartalmaz elején évet, 1 az index
-        else { console.log("\x1b[41m\x1b[37m" + "##### ERROR: getDateIndex()-ben nem megfelelő az input. ##### \x1b[0m"); return; }  //Hibakód
+        //Ha tartalmaz évet, 2 az index.
+        if(/^\d{4}\.\d{1,2}\.\d{1,2}\.?$/.test(datum))
+            return 2;
+        //Ha nem tartalmaz elején évet, 1 az index
+        else if(/^\d{1,2}\.\d{1,2}\.?$/.test(datum)) 
+            return 1;
+        else { 
+            console.log("\x1b[41m\x1b[37m" + 
+            "##### ERROR: getDateIndex()-ben nem megfelelő az input. #####"
+            + "\x1b[0m"); 
+            return;
+        }  
     },
 
     getBirthday: function(datum){
-        if(/^\d{4}\.\d{1,2}\.\d{1,2}\.?$/.test(datum)) return datum.slice(5);
+        if(/^\d{4}\.\d{1,2}\.\d{1,2}\.?$/.test(datum)) 
+            return datum.slice(5);
         else return datum;
     },
 
     hasYear: function(datum){
-        if(/^\d{4}\.\d{1,2}\.\d{1,2}\.?$/.test(datum)) return true;
+        if(/^\d{4}\.\d{1,2}\.\d{1,2}\.?$/.test(datum)) 
+            return true;
         else return false;
     },
 
-    APIdate: function(callback){
+    WorldTime_API: function(callback){
         try{
-            request('http://worldtimeapi.org/api/timezone/Europe/Budapest', {json: true}, (err, res, body) => {
+            request('http://worldtimeapi.org/api/timezone/Europe/Budapest',
+            {json: true}, (err, res, body) => {
                 try{
-                    if(err) { console.log("Error: API request", err); return callback && callback(err); }
-                    //body = JSON.parse(body);
-                    //let tempArray = body.datetime.slice(11, 19);
-                    console.log(res);
-                    //let currentDate = tempArray[0];
-                    //let line = /\-/g;
-                    //currentDate = currentDate.replace(line, '.');
-                    //currentDate = this.getDate(body.datetime);
-                    //currentDate = this.getDate(currentDate);
-                    //return callback && callback(null, currentDate);
-                }catch(error) { return callback && callback(error); }
+                    if(err) { 
+                        console.log("Error: API request", err); 
+                        return callback && callback(err); 
+                    }
+                    let temp = body.datetime.split('T')
+                    let date = temp[0];
+                    date = date.replace(/\-/g, '.');
+                    date = this.getDate(date);
+                    return callback && callback(null, date);
+                }catch(error) {
+                    return callback && callback(error);
+                }
             });
-        }catch(error) { console.log("Error: API request function", error); return;}
+        }catch(error) {
+            console.log("Error: World Time API request function", error); 
+            return;
+        }
     },
 
-    BIOSdate: function () {
+    BIOSdate: function() {
         let myDate = new Date();
-        let year = myDate.getFullYear();
         let month = myDate.getMonth()+1;
-        let day = myDate.getDate();
-        let currentDate = year + "." + month + "." + day;
-        currentDate = this.getDate(currentDate);
-        return currentDate;
+        let date = myDate.getFullYear() + "." + month + "." + myDate.getDate();
+        date = this.getDate(date);
+        return date;
     },
 
     httpCreateServer: http.createServer(function(request,response){
@@ -139,15 +191,24 @@ module.exports = {
     
     hasNumber: function (myString) { return /\d/.test(myString); },
 
-    roleAdd: function roleAdd() {
-        let BIOSdate = BIOSdate();
-        let BIOStoday = getBirthday(BIOSdate);
-        dateCompare(BIOStoday, BIOSdate);
+    roleAdd: function(Discord, client) {
+        try{
+            this.WorldTime_API((err, APIdate) =>{
+                if(err){
+                    console.log(err);
+                    let BIOSdate = this.BIOSdate();
+                    let BIOStoday = this.getBirthday(BIOSdate);
+                    this.dateCompare(BIOStoday, BIOSdate);
+                }
+                let APItoday = this.getBirthday(APIdate);
+                this.dateCompare(APItoday, APIdate);
+            });
+        }catch(error) { console.log(error); return; }
     },
 
-    serverComapre: function serverCompare(){
+    serverCompare: function(){
         let guilds = client.guilds.cache.map(guild => guild);
-        jsonReader('database.json', (err, database) => {
+        this.jsonReader('database.json', (err, database) => {
             if(err) { console.error("Error: Index-ready - Reading file:", err); return; }
             let Szerverek = []
             for(let i = 0; i < client.guilds.cache.size; i++){
@@ -164,94 +225,85 @@ module.exports = {
                 if(err){ console.error("Error: Index-ready - Writing file", err); return; }
             });
         });
-        console.log(guilds);
     },
 
-    dateCompare: function dateCompare(today, date){
+    dateCompare: function(today, date){
         try{
             var birthdayTrue = false;
-        jsonReader("./database.json", (err, database) => {
+            this.jsonReader("./database.json", (err, database) => {
                 if(err) { console.log(err); return; }
                 try{
                     for(let i = 0; i < database.Tagok.length; i++){
                         //Információk
-                        let birthday = getBirthday(database.Tagok[i].Birthday);
+                        let birthday = this.getBirthday(database.Tagok[i].Birthday);
                         let szerver = client.guilds.cache.get(database.Tagok[i].ServerID);
                         let tag = szerver.members.cache.get(database.Tagok[i].UserID);
                         //let sznaposRole = szerver.roles.cache.find(role => role.name === 'Születésnapos');
                         //let subRole = szerver.roles.cache.find(role => role.name === 'twitch sub');
                         //let tarsalgo = szerver.channels.cache.find(channel => channel.name === "☕-tarsalgo");
-    
+                        var tarsalgo;
+                        for(let j = 0; j < database.Szerverek.length; j++){
+                            if(szerver == database.Szerverek[j].ServerID)
+                                tarsalgo = szerver.channels.cache.get(database.Szerverek[j].BotChannelID);
+                        }
+                        
                         //Üzenet
                         let exampleEmbed = new Discord.MessageEmbed()
                         .setColor('#f1c40f')
                         .setTitle(`Boldog születésnapot ${tag.user.username}!`)
                         .setAuthor('Születésnaposunk van', 'https://i.imgur.com/2KrTApE.png')
-                        .setDescription('Mai napra látogathatod a csak subok által látható szobákat is')
+                        //.setDescription('Mai napra látogathatod a csak subok által látható szobákat is')
                         .setThumbnail(`${tag.user.displayAvatarURL()}`)
                         .setTimestamp()
                         .setFooter('Birthday', 'https://i.imgur.com/2KrTApE.png');
                         
                         let jelenEv = date.slice(0, 4);
                         console.log(today, birthday);
-                    
-                        
+
                         //Ha nem ma van a szülinapja ...
                         if(today !== birthday){
                             //LEHET SZÖKŐNAPON VAN VALAKI SZÜLINAPJA
                             //Szökőnap helyett 28-án is megadja a rolet.
-                            if(birthday === "2.29" && today === "2.28" && jelenEv % 4 != 0 && !tag.roles.cache.has(sznaposRole.id)){
+                            if(birthday === "2.29" && today === "2.28" && jelenEv % 4 != 0){
                                 birthdayTrue = true;
-                                tag.roles.add(sznaposRole);
                                 //Ha van év írja a kort.
-                                if (hasYear(database.Tagok[i].Birthday)){
+                                if (this.hasYear(database.Tagok[i].Birthday)){
                                     let szulEv = database.Tagok[i].Birthday.slice(0, 4);
                                     let jelenEv = date.slice(0, 4);
                                     let kor = jelenEv - szulEv;
                                     exampleEmbed.setTitle(`Boldog ${kor}. születésnapot ${tag.user.username}!`);
                                     tarsalgo.send(`Boldog ${kor}. születésnapot kívánok! <@${tag.user.id}`);
-                                    if(tag.roles.cache.has(subRole.id)) 
-                                        exampleEmbed.setDescription(`Mai napra látogathatod a csak subok által látható szobákat is ${emoji(adatok.emojik.kappa)}`);
                                     tarsalgo.send(exampleEmbed);
                                 }
                                 //Ha nincs év nem írja a kort.
                                 else{
                                     tarsalgo.send(`Boldog születésnapot kívánok <@${tag.user.id}>!`);
-                                    if(tag.roles.cache.has(subRole.id)) 
-                                        exampleEmbed.setDescription(`Mai napra látogathatod a csak subok által látható szobákat is ${emoji(adatok.emojik.kappa)}`);
                                     tarsalgo.send(exampleEmbed);
                                 }
-                            //Ha nem ma van a szülinapja, és nem szökőnapos, leveszi a rolet, ha van neki.
-                            }else if(tag.roles.cache.has(sznaposRole.id)) tag.roles.remove(sznaposRole);
+                            }
                         }
                         //Ha szülinapja van illetőnek megadja a rolet, ha még nincs meg neki.
-                        else if(today === birthday && !tag.roles.cache.has(sznaposRole.id)){
+                        else if(today === birthday){
                             birthdayTrue = true;
-                            tag.roles.add(sznaposRole);
                             //Ha van év írja a kort.
-                            if (hasYear(database.Tagok[i].Birthday)){
+                            if (this.hasYear(database.Tagok[i].Birthday)){
                                 let szulEv = database.Tagok[i].Birthday.slice(0, 4);
                                 let jelenEv = date.slice(0, 4);
                                 let kor = jelenEv - szulEv;
-    
                                 exampleEmbed.setTitle(`Boldog ${kor}. születésnapot ${tag.user.username}!`);
                                 tarsalgo.send(`Boldog ${kor}. születésnapot kívánok <@${tag.user.id}>!`);
-                                if(tag.roles.cache.has(subRole.id)) 
-                                    exampleEmbed.setDescription(`Mai napra látogathatod a csak subok által látható szobákat is ${emoji(adatok.emojik.kappa)}`);
                                 tarsalgo.send(exampleEmbed);
                             }
                             //Ha nincs év nem írja a kort.
                             else{
                                 tarsalgo.send(`Boldog születésnapot kívánok <@${tag.user.id}>!`);
-                                if(tag.roles.cache.has(subRole.id)) 
-                                    exampleEmbed.setDescription(`Mai napra látogathatod a csak subok által látható szobákat is ${emoji(adatok.emojik.kappa)}`);
                                 tarsalgo.send(exampleEmbed);
                             }
                         }
                     }
                 }catch(err) { console.log(err); }
-                if(birthdayTrue) setTimeout(roleAdd, 1000 * 60 * 60 * 24);
-                else if(!birthdayTrue) setTimeout(roleAdd, 1000 * 60 * 60 * 3);
+                if(birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 24);
+                else if(!birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 3);
             });
         }catch(error) { console.log(error) }
     }

@@ -1,8 +1,8 @@
-const Discord  = require('discord.js');       //Discord funkciók
-const client   = new Discord.Client({ 
-partials:["MESSAGE", "CHANNEL", "REACTION"]});//Discord kliens létrehozása
+const Discord = require('discord.js');
+const client = new Discord.Client({ 
+partials:["MESSAGE", "CHANNEL", "REACTION"]});
 module.exports = client;
-const func     = require('./functions.js');   //Saját funkciók
+const func = require('./functions.js');
 
 client.commands = new Discord.Collection();
 client.events = new Discord.Collection();

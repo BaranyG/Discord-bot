@@ -3,8 +3,8 @@
         {
             "ServerID": "378678510820261889",
             "ServerName": "Faszpörgetők",
-            "BotChannelID": "735100428735217725",
-            "BotChannelName": "bot-szoba"
+            "BotChannelID": "880149063763374120",
+            "BotChannelName": "bot-státusz"
         }
     ],
     "Tagok": [
@@ -13,6 +13,12 @@
             "Username": "Killua Zoldyck",
             "UserID": "164235493104549888",
             "Birthday": "2000.7.27"
+        },
+        {
+            "ServerID": "378678510820261889",
+            "Username": "Imp3R4T0R",
+            "UserID": "303604743391936513",
+            "Birthday": "1952.8.31"
         }
     ]
 }
