@@ -1,6 +1,6 @@
 module.exports = {
     name: 'parancsok',
-    execute(client, message, args, func){
+    execute(Discord, client, message, args, func){
         try{
             message.channel.send("**!szülinap** - Kiírja mit írhatsz !szülinap után. \n**!szülinap formátum** - Kiírja hogyan fogadja el a dátumot. \n**!szülinap [születési dátum]** - Regisztrálja a születési dátumod. \n**!frissít** - Lefrissíti a bot, hogy van-e ma születésnapos. \n**!módosítás @user [dátum]** - Felülírja @user-nek a dátumát. (__Modoknak!__) \n**!parancsok** - Kiírja a parancsokat.");
         } catch(err) {

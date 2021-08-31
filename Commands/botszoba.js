@@ -16,12 +16,12 @@ module.exports = {
                         if(database.Szerverek[i].BotChannelID === Szerver.BotChannelID) { 
                             message.reply("Ez a szoba már meg van adva botszobának!"); 
                             if(database.Szerverek[i].BotChannelName !== Szerver.BotChannelName)
-                                database.Szerverek[i].BotChannelName == Szerver.BotChannelName;
+                                database.Szerverek[i].BotChannelName = Szerver.BotChannelName;
                             return;
                         }else if(database.Szerverek[i].BotChannelID !== Szerver.BotChannelID){
                             database.Szerverek[i].BotChannelID = Szerver.BotChannelID;
                             database.Szerverek[i].BotChannelName = Szerver.BotChannelName;
-                            fs.writeFile('../database.json', JSON.stringify(database, null, 4), function(err){
+                            fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
                                 if(err){ hibaUzenetDelete("Error: Botszoba - Writing File"); console.log("Error: Botszoba - Writing file", err); return; }
                                 message.reply("Botszoba sikeresen módosítva");
                                 return;

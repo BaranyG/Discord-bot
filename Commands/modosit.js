@@ -1,15 +1,36 @@
-const fs       = require('fs');          //Fájlkezelő parancsok importálása
+const fs       = require('fs');
 module.exports = {
     name: 'modosit',
     execute(Discord, client, func, message, args){
         try{
-            if(args[0]===undefined){ hibaUzenetDelete("Adj meg egy felhasználót: @User"); return; }
-            if (!args[0].startsWith('<@') && !args[0].endsWith('>')) { hibaUzenetDelete("Error: Nem felhasználót adtál meg."); return; }
-            if(args[1]===undefined){ hibaUzenetDelete("Adj meg egy dátumot."); return; }
-            else if(!args[2] === undefined) { hibaUzenetDelete("Ne írj utána semmit pliz."); return; }
-            else if(args[1].length < 3 || args[1].length > 11){ hibaUzenetDelete("Error: Nem megfelelő hosszúságú dátum."); return; }
-            else if(!func.formatDate(args[1])) { hibaUzenetDelete("Error: Nem megfelelő formátum: [!szülinap formátum]\nVagy nem érvényes dátumot adtál meg."); return; }
-            else if(!func.validDate(args[1])) { hibaUzenetDelete("Error: Nem érvényes dátumot adtál meg."); return; }
+            if(args[0]===undefined){ 
+                hibaUzenetDelete("Adj meg egy felhasználót: @User");
+                return; 
+            }
+            if (!args[0].startsWith('<@') && !args[0].endsWith('>')){ 
+                hibaUzenetDelete("Error: Nem felhasználót adtál meg.");
+                return; 
+            }
+            if(args[1]===undefined){ 
+                hibaUzenetDelete("Adj meg egy dátumot.");
+                return; 
+            }
+            else if(!args[2] === undefined){ 
+                hibaUzenetDelete("Ne írj utána semmit pliz.");
+                return; 
+            }
+            else if(args[1].length < 3 || args[1].length > 11){ 
+                hibaUzenetDelete("Error: Nem megfelelő hosszúságú dátum.");
+                return; 
+            }
+            else if(!func.formatDate(args[1])){ 
+                hibaUzenetDelete("Error: Nem megfelelő formátum: [!szülinap formátum]\nVagy nem érvényes dátumot adtál meg."); 
+                return; 
+            }
+            else if(!func.validDate(args[1])){ 
+                hibaUzenetDelete("Error: Nem érvényes dátumot adtál meg.");
+                return; 
+            }
             
             let MentionedUserID = func.MentionGetID(args[0]);
             let UserExists = false;
@@ -29,9 +50,13 @@ module.exports = {
                         return;
                     });
                 });
-            }catch(error){ hibaUzenetDelete("Error #M1"); console.log("Error #M1", error); return; }
+            }catch(error){ 
+                hibaUzenetDelete("Error #M1"); 
+                console.log("Error #M1", error); 
+                return; 
+            }
             return;
-        } catch(e){
+        }catch(e) {
             hibaUzenetDelete("Error #M0");
             console.log("Error: #M0", e);
         }
