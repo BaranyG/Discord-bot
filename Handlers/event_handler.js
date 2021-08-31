@@ -8,7 +8,6 @@ module.exports = (Discord, client, func) =>{
             const event = require(`../Events/${dirs}/${file}`);
             const event_name = file.split('.')[0];
             client.on(event_name, event.bind(null, Discord, client, func));
-            console.log(event_name);
         }
     }
 
