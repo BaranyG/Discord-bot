@@ -19,6 +19,7 @@ module.exports = (Discord, client, func, message) => {
         message.channel.send('Frissítve!');
         return;
     }
+    
 
     /*
     //Modok parancsai:

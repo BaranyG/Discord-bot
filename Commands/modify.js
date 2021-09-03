@@ -1,30 +1,28 @@
 const fs       = require('fs');
+//const client = require('../index.js')
 module.exports = {
     name: 'modify',
     execute(Discord, client, func, message, args){
         try{
-            if(args[0]===undefined){
-                hibaUzenetDelete("Adj meg egy felhasználót: @User");
+            const pelda = `Parancs használata: **!modify @User [dátum]** \n**Példák:** \n!modify <@${client.user.id}> 2000.01.01 \n!modify <@${client.user.id}> 1.1`;
+            
+            if(args[1] === undefined || args[0] === undefined){
+                hibaUzenetDelete(pelda);
                 return;
             }
-            if (!args[0].startsWith('<@') && !args[0].endsWith('>')){
-                hibaUzenetDelete("Error: Nem felhasználót adtál meg.");
-                return;
-            }
-            if(args[1]===undefined){
-                hibaUzenetDelete("Adj meg egy dátumot.");
-                return;
-            }
-            else if(!args[2] === undefined){
-                hibaUzenetDelete("Ne írj utána semmit pliz.");
+            else if(!(func.formatDate(args[1]) || (args[0].startsWith('<@') && args[0].endsWith('>')))){
+                let uzenet = "Nem megfelelően adtad meg a"
+                if(!(args[0].startsWith('<@') && args[0].endsWith('>'))){
+                    uzenet += "felhasználót."
+                }else if(!func.formatDate(args[1])){
+                    uzenet += "dátumot."
+                }
+                hibaUzenetDelete(uzenet);
+                hibaUzenetDelete(pelda);
                 return;
             }
             else if(args[1].length < 3 || args[1].length > 11){
                 hibaUzenetDelete("Error: Nem megfelelő hosszúságú dátum.");
-                return;
-            }
-            else if(!func.formatDate(args[1])){
-                hibaUzenetDelete("Error: Nem megfelelő formátum: [!szülinap formátum]\nVagy nem érvényes dátumot adtál meg.");
                 return;
             }
             else if(!func.validDate(args[1])){
@@ -76,7 +74,7 @@ module.exports = {
                 msg.delete({ timeout: 1000 * 60 * 60 });
             });
             message.fetch(message.id).then(msg => {
-                msg.delete({ timeout: 100 });
+                msg.delete({ timeout: 1000 * 60 * 60 });
             });
         }
     }

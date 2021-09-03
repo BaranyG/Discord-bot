@@ -21,6 +21,11 @@ module.exports = {
     },
 
     formatDate: function(datum){
+        if(datum===undefined){
+            console.log("formatDate() undefined paramétert kap.");
+            return;
+        }
+        datum.toString();
         //Ezt nem kell magyarázni ez tök könnyű
         //(Ellenőrzi a dátum formátumát, hogy megfelelő-e, és leszűkíti az érvényes dátumok számát)
         if(/^([1-2](9|0)[0-9]{2}\.)?[0-1]?[0-9]\.[0-3]?[0-9]\.?$/.test(datum))
@@ -193,7 +198,7 @@ module.exports = {
 
     emoji: function emoji (id) { return client.emojis.cache.get(id).toString(); },
 
-    roleAdd: function(Discord, client) {
+    roleAdd: function() {
         try{
             this.WorldTime_API((err, APIdate) =>{
                 if(err){
@@ -205,13 +210,19 @@ module.exports = {
                 let APItoday = this.getBirthday(APIdate);
                 this.dateCompare(APItoday, APIdate);
             });
-        }catch(error) { console.log(error); return; }
+        }catch(error){
+            console.log(error);
+            return;
+        }
     },
 
     serverCompare: function(){
         let guilds = client.guilds.cache.map(guild => guild);
         this.jsonReader('database.json', (err, database) => {
-            if(err) { console.error("Error: Index-ready - Reading file:", err); return; }
+            if(err){
+                console.error("Error: Index-ready - Reading file:", err);
+                return;
+            }
             let Szerverek = []
             for(let i = 0; i < client.guilds.cache.size; i++){
                 let Szerver = {
@@ -224,7 +235,10 @@ module.exports = {
             let merged = [...database.Szerverek, ...Szerverek.filter(g => !ids.has(g.ServerID))]
             database.Szerverek = merged;
             fs.writeFile('database.json', JSON.stringify(database, null, 4), function(err){
-                if(err){ console.error("Error: Index-ready - Writing file", err); return; }
+                if(err){
+                    console.error("Error: Index-ready - Writing file", err);
+                    return;
+                }
             });
         });
     },
@@ -240,13 +254,11 @@ module.exports = {
                         let birthday = this.getBirthday(database.Tagok[i].Birthday);
                         let szerver = client.guilds.cache.get(database.Tagok[i].ServerID);
                         let tag = szerver.members.cache.get(database.Tagok[i].UserID);
-                        //let sznaposRole = szerver.roles.cache.find(role => role.name === 'Születésnapos');
-                        //let subRole = szerver.roles.cache.find(role => role.name === 'twitch sub');
-                        //let tarsalgo = szerver.channels.cache.find(channel => channel.name === "☕-tarsalgo");
                         var tarsalgo;
                         for(let j = 0; j < database.Szerverek.length; j++){
                             if(szerver == database.Szerverek[j].ServerID)
                                 tarsalgo = szerver.channels.cache.get(database.Szerverek[j].BotChannelID);
+                                break;
                         }
                         if(tag.user.username !== database.Tagok[i].Username){
                             database.Tagok[i].Username = tag.user.username;
@@ -260,7 +272,6 @@ module.exports = {
                             });
                         }
                         
-
 
                         //Üzenet
                         let exampleEmbed = new Discord.MessageEmbed()
@@ -316,10 +327,14 @@ module.exports = {
                             }
                         }
                     }
-                }catch(err) { console.log(err); }
+                }catch(err) {
+                    console.log(err);
+                }
                 if(birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 24);
                 else if(!birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 3);
             });
-        }catch(error) { console.log(error) }
+        }catch(error) {
+            console.log(error)
+        }
     }
 }
