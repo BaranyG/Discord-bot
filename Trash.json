@@ -1,0 +1,110 @@
+{
+    "Szerverek": [
+        {
+            "ServerID": "378678510820261889",
+            "ServerName": "Faszpörgetők",
+            "BotChannelID": "735100428735217725",
+            "BotChannelName": "bot-szoba"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "ServerName": "unlimited"
+        },
+        {
+            "ServerID": "753983895707582567",
+            "ServerName": "GameDay Szakadárok 2.0"
+        }
+    ],
+    "Tagok": [
+        {
+            "ServerID": "378678510820261889",
+            "Username": "Killua Zoldyck",
+            "UserID": "164235493104549888",
+            "Birthday": "2000.7.27"
+        },
+        {
+            "ServerID": "378678510820261889",
+            "Username": "Géza vagyok negyed tonna",
+            "UserID": "696592990940168192",
+            "Birthday": "9.11"
+        },
+        {
+            "ServerID": "378678510820261889",
+            "Username": "Slavicor Dalí",
+            "UserID": "676332078698332170",
+            "Birthday": "2000.8.22"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "BárányG",
+            "UserID": "308363066418921473",
+            "Birthday": "2000.7.27"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Rudolf Blahna",
+            "UserID": "576415617297547269",
+            "Birthday": "2004.6.22"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Hardy",
+            "UserID": "264509329246388224",
+            "Birthday": "3.12"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Sylarys",
+            "UserID": "213015155582173184",
+            "Birthday": "12.18"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Nabalazs",
+            "UserID": "104881915198189568",
+            "Birthday": "1998.7.24"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Ezrahadon",
+            "UserID": "449651046873169940",
+            "Birthday": "7.6"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Chris_FWG",
+            "UserID": "334390644250509323",
+            "Birthday": "2001.7.13"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Lillilillol",
+            "UserID": "159367418072924169",
+            "Birthday": "2.29"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Tomi2200",
+            "UserID": "270287335180992512",
+            "Birthday": "2000.10.20"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "Baarnus",
+            "UserID": "180001076186054658",
+            "Birthday": "1988.8.13"
+        },
+        {
+            "ServerID": "351506684998320139",
+            "Username": "KémiaKapitány",
+            "UserID": "383527326320689153",
+            "Birthday": "1994.12.5"
+        },
+        {
+            "ServerID": "378678510820261889",
+            "Username": "BárányG",
+            "UserID": "308363066418921473",
+            "Birthday": "2000.7.27"
+        }
+    ]
+}
