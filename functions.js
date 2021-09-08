@@ -3,7 +3,10 @@ const http     = require('http');
 const request  = require('request');
 const Discord  = require('discord.js');
 const client   = require('./index.js');
-module.exports = {
+module.exports =  {
+    name: 'functions',
+    description: 'Itt van az összes saját funkció',
+    //Async (JSON) fájl beolvasás
     jsonReader: function(filepath, callback){
         fs.readFile(filepath, 'utf8', (err, data) => {
             if (err) {
@@ -260,6 +263,7 @@ module.exports = {
                                 tarsalgo = szerver.channels.cache.get(database.Szerverek[j].BotChannelID);
                                 break;
                         }
+                        //Ha a felhasználó (jelenlegi) neve nem egyezik az adatbáziséval, írja felül az adatbázist az újjal.
                         if(tag.user.username !== database.Tagok[i].Username){
                             database.Tagok[i].Username = tag.user.username;
                             fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
@@ -278,7 +282,6 @@ module.exports = {
                         .setColor('#f1c40f')
                         .setTitle(`Boldog születésnapot ${tag.user.username}!`)
                         .setAuthor('Születésnaposunk van', 'https://i.imgur.com/2KrTApE.png')
-                        //.setDescription('Mai napra látogathatod a csak subok által látható szobákat is')
                         .setThumbnail(`${tag.user.displayAvatarURL()}`)
                         .setTimestamp()
                         .setFooter('Birthday', 'https://i.imgur.com/2KrTApE.png');
@@ -330,7 +333,9 @@ module.exports = {
                 }catch(err) {
                     console.log(err);
                 }
+                //Ha volt ma szülinapos, 24 óra múlva fusson le legközelebb
                 if(birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 24);
+                //Ha nem volna ma szülinapos, 3 óra múlva fusson le legközelebb
                 else if(!birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 3);
             });
         }catch(error) {
