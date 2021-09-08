@@ -46,7 +46,8 @@
 
 //That is intentional behaviour. The messages must be cached before expecting events from them. You can get around this by fetching them on startup or something of the like.
 
-//The problem you have here is you are getting a <User> object instead of a <GuildMember> object. Users are not associated with a guild and therefore cannot have roles. You typically want to use a user when it doesn't involve guild specific actions (like Direct Messaging)
+//The problem you have here is you are getting a <User> object instead of a <GuildMember> object. Users are not associated with a guild and therefore cannot have roles. 
+//You typically want to use a user when it doesn't involve guild specific actions (like Direct Messaging)
 //You cannot get a Member from the Client object directly, however you can get 
 //Client.guilds.cache 
 //and then retrieve the guild, followed by the member from the Guild object using 
@@ -98,3 +99,79 @@
 
 // Discord Roles
 //https://anidiots.guide/understanding/roles
+
+
+
+
+
+
+/*
+
+素晴らしき世界に今日も乾杯
+街に飛び交う笑い声も
+見て見ぬフリしてるだけの作りもんさ
+
+気が触れそうだ
+クラクラするほどの良い匂いが
+ツンと刺した鼻の奥
+目を覚ます本能のまま
+今日は誰の番だ？
+
+この世界で何が出来るのか
+僕には何が出来るのか
+ただその真っ黒な目から
+涙溢れ落ちないように
+
+願う未来に何度でもずっと
+喰らいつく
+この間違いだらけの世界の中
+君には笑ってほしいから
+もう誰も傷付けない
+強く強くなりたいんだよ
+僕が僕でいられるように
+
+素晴らしき世界は今日も安泰
+街に渦巻く悪い話も
+知らない知らないフリして目を逸らした
+
+正気の沙汰じゃないな
+真面目に着飾った行進
+鳴らす足音が弾む行き先は
+消えない消えない味が染み付いている
+裏側の世界
+
+清く正しく生きること
+誰も悲しませずに生きること
+はみ出さず真っ直ぐに生きること
+それが間違わないで生きること？
+
+ありのまま生きることが正義か
+騙し騙し生きるのは正義か
+僕の在るべき姿とはなんだ
+本当の僕は何者なんだ
+教えてくれよ
+教えてくれよ
+
+今日も
+答えのない世界の中で
+願ってるんだよ
+不器用だけれど
+いつまでも君とただ
+笑っていたいから
+跳ねる心臓が
+体揺らし叫ぶんだよ
+今こそ動き出せ
+
+弱い自分を何度でもずっと
+喰らい尽くす
+この間違いだらけの世界の中
+君には笑ってほしいから
+もう誰も泣かないよう
+強く強くなりたいんだよ
+僕が僕でいられるように
+
+ただ君を守るそのために
+走る走る走るんだよ
+僕の中の僕を超える
+
+*/
