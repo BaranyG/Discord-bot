@@ -4,7 +4,7 @@
             "ServerID": "378678510820261889",
             "ServerName": "Faszpörgetők",
             "BotChannelID": "880149063763374120",
-            "BotChannelName": "bot-státusz"
+            "BotChannelName": "bot-státuszquo"
         }
     ],
     "Tagok": [
@@ -12,19 +12,75 @@
             "ServerID": "378678510820261889",
             "Username": "Sloth",
             "UserID": "164235493104549888",
-            "Birthday": "2000.7.27"
+            "Birthday": "1966.6.6"
         },
         {
             "ServerID": "378678510820261889",
             "Username": "Imp3R4T0R",
             "UserID": "303604743391936513",
-            "Birthday": "1952.5.31"
+            "Birthday": "1.1"
         },
         {
             "ServerID": "378678510820261889",
             "Username": "Ki a faszom",
             "UserID": "308363066418921473",
             "Birthday": "9.1"
+        },
+        {
+            "UserID": "238385945135546370",
+            "Username": "Kollár Mátyás"
+        },
+        {
+            "UserID": "281112803299819520",
+            "Username": "Köblös Kristóf"
+        },
+        {
+            "UserID": "331820086505635842",
+            "Username": "Tibi"
+        },
+        {
+            "UserID": "338331858616057866",
+            "Username": "Boom"
+        },
+        {
+            "UserID": "339784816713138177",
+            "Username": "Ullren G. (Galnings)"
+        },
+        {
+            "UserID": "454535947489640450",
+            "Username": "amúgy neked csak Viktor"
+        },
+        {
+            "UserID": "491947271479361547",
+            "Username": "khrysbeast"
+        },
+        {
+            "UserID": "633299760698097676",
+            "Username": "Márkó"
+        },
+        {
+            "UserID": "676332078698332170",
+            "Username": "Slavicor Dalí"
+        },
+        {
+            "UserID": "685803137583415297",
+            "Username": "Mokusz idő van"
+        },
+        {
+            "UserID": "696592990940168192",
+            "Username": "Csirifiszkió"
+        },
+        {
+            "UserID": "704988884592885831",
+            "Username": "Jakab Dávid"
+        },
+        {
+            "UserID": "710813152945897494",
+            "Username": "üdv.adj.pinat"
+        },
+        {
+            "UserID": "728690576332947528",
+            "Username": "Rangoon19"
         }
     ]
 }

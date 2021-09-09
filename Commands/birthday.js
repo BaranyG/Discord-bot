@@ -61,7 +61,7 @@ module.exports = {
                     fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
                         if(err){ hibaUzenetDelete("Error #F4"); 
                             console.log("Error #F4: Writing file:", err); 
-                            return; 
+                            return;
                         }
                         hibaUzenetDelete("Sikeresen hozzáadva!");
                         return;
@@ -79,10 +79,11 @@ module.exports = {
         }
         function hibaUzenetDelete(uzenet){
             message.reply(uzenet).then(msg => {
-                msg.delete({ timeout: 1000 * 60 * 60 });
+                setTimeout(() => msg.delete(), 1000 * 60 * 60);
+                //msg.delete({ timeout: 1000 * 60 * 60 });
             });
             message.fetch(message.id).then(msg => {
-                msg.delete({ timeout: 1000 * 60 * 60 });
+                setTimeout(() => msg.delete(), 1000 * 60 * 60);
             });
         }
     }

@@ -19,8 +19,7 @@ module.exports = (Discord, client, func) => {
     //console.log(unlimited.members.cache.map(member => member.user.username));
     //client.guilds.cache.get(adatok.unlimited.id).channels.cache.get(adatok.unlimited.tarsalgo).send(exampleEmbed);
     //client.guilds.cache.get(adatok.faszporgetok.id).channels.cache.get(adatok.faszporgetok.tarsalgo).send(emoji(adatok.emojik.feelsokayman) + emoji(adatok.emojik.bogre));
-
-    func.serverCompare();
-    func.roleAdd();
+    
+    func.ready();
     func.httpCreateServer;
 }
