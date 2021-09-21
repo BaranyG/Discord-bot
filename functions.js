@@ -386,6 +386,7 @@ module.exports = {
                         let szerver = client.guilds.cache.get(database.Szerverek[i].ServerID);
                         let botszoba = szerver.channels.cache.get(database.Szerverek[i].BotChannelID);
                         
+                        if(botszoba===undefined) continue;
                         if(szerver.name !== database.Szerverek[i].ServerName || botszoba.name !== database.Szerverek[i].BotChannelName){
                             database.Szerverek[i].ServerName = szerver.name;
                             database.Szerverek[i].BotChannelName = botszoba.name;
