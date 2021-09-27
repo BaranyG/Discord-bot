@@ -4,6 +4,9 @@ const request  = require('request');
 const Discord  = require('discord.js');
 const client   = require('./index.js');
 module.exports = {
+    name: 'functions',
+    description: 'Itt van az összes saját függvény',
+    //Async (JSON) fájl beolvasás
     jsonReader: async function(filepath, callback){
         fs.readFile(filepath, 'utf8', (err, data) => {
             if (err) {
@@ -170,7 +173,7 @@ module.exports = {
 
     roleAdd: async function() {
         try{
-            this.WorldTime_API((err, APIdate) =>{
+            this.WorldTime_API((err, APIdate) => {
                 if(err){
                     console.log(err);
                     let BIOSdate = this.BIOSdate();
@@ -260,8 +263,10 @@ module.exports = {
                         }
                     }
                 }
-                if(birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 24);
-                else if(!birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 3);
+                //Ha volt ma szülinapos, 24 óra múlva fusson le legközelebb
+                if(birthdayTrue) setTimeout(() => this.roleAdd(), 1000 * 60 * 60 * 24);
+                //Ha nem volna ma szülinapos, 3 óra múlva fusson le legközelebb
+                else setTimeout(() => this.roleAdd(), 1000 * 60 * 60 * 3);
             });
         }catch(error) {
             console.log(error)
