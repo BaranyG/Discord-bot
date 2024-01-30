@@ -1,17 +1,28 @@
+//Formatting shortcut: Ctrl+K Ctrl+F OR Alt+Shift+F
+
 const Discord = require('discord.js');
-const { Client, Intents } = require('discord.js');
-const myIntents = new Intents();
+const { Client, IntentsBitField } = require('discord.js');
+const myIntents = new IntentsBitField();
 myIntents.add(
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_PRESENCES,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Intents.FLAGS.DIRECT_MESSAGES,
-    Intents.FLAGS.GUILD_VOICE_STATES
-    );
-const client = new Client({ intents: myIntents });
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMembers,
+//  IntentsBitField.Flags.GuildBans,
+    IntentsBitField.Flags.GuildEmojisAndStickers,
+//  IntentsBitField.Flags.GuildIntegrations,
+//  IntentsBitField.Flags.GuildWebhooks,
+//  IntentsBitField.Flags.GuildInvites,
+    IntentsBitField.Flags.GuildVoiceStates,
+    IntentsBitField.Flags.GuildPresences,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.GuildMessageReactions,
+//  IntentsBitField.Flags.GuildMessageTyping,
+    IntentsBitField.Flags.DirectMessages,
+    IntentsBitField.Flags.DirectMessageReactions,
+    IntentsBitField.Flags.DirectMessageTyping,
+    IntentsBitField.Flags.MessageContent,
+//  IntentsBitField.Flags.GuildScheduledEvents,
+);
+const client = new Client({ intents: myIntents, autoReconnect: true, retryLimit: Infinity });
 module.exports = client;
 const func = require('./functions.js');
 
@@ -21,6 +32,6 @@ client.events = new Discord.Collection();
     require(`./Handlers/${handler}`)(Discord, client, func);
 });
 
-//client.guilds.cache.get().members.cache.get().permissions.has("MANAGE_ROLES")
+client.login(require('./config.json').Token);  //BárányG Bot
 
-client.login(require('./config.js').Token);  //BárányG Bot
+//client.guilds.cache.get().members.cache.get().permissions.has("MANAGE_ROLES")

@@ -6,7 +6,7 @@ module.exports = (Discord, client, func) => {
     for(const file of command_files){                        //commands mappa beolvasása.
         const command = require(`../Commands/${file}`);      //commands mappában fájlok beolvasása.
         if(command.name)
-        client.commands.set(command.name, command);
+            client.commands.set(command.name, command);
         else continue;
     }
 }
