@@ -4,10 +4,23 @@ module.exports = {
     name: 'modify',
     execute(Discord, client, func, message, args){
         try{
-            const pelda = `Parancs használata: **!modify @User [dátum]** \n**Példák:** \n!modify <@${client.user.id}> 2000.01.01 \n!modify <@${client.user.id}> 1.1`;
+            //Csak moderátoroknak!
+            if(message.member.permissions.has("MANAGE_CHANNELS") ||
+            message.member.permissions.has("MANAGE_GUILD") ||
+            message.member.permissions.has("MANAGE_ROLES")){
+            }else {
+            //Plebeknek
+                hibaUzenetDelete("Kérj meg rá egy aktív moderátort.");
+                return;
+            }
+        
+            const pelda = `Parancs használata: **!modify @User [dátum]** \n
+            **Példák:** \n
+            !modify <@${client.user.id}> 2000.01.01 \n
+            !modify <@${client.user.id}> 1.1`;
             
             if(args[1] === undefined || args[0] === undefined){
-                hibaUzenetDelete(pelda);
+                message.reply(pelda);
                 return;
             }
             else if(!(func.formatDate(args[1]) || (args[0].startsWith('<@') && args[0].endsWith('>')))){
@@ -71,10 +84,10 @@ module.exports = {
         }
         function hibaUzenetDelete(uzenet){
             message.reply(uzenet).then(msg => {
-                msg.delete({ timeout: 1000 * 60 * 60 });
+                setTimeout(() => msg.delete(), 1000 * 60 * 60);
             });
             message.fetch(message.id).then(msg => {
-                msg.delete({ timeout: 1000 * 60 * 60 });
+                setTimeout(() => msg.delete(), 1000 * 60 * 60);
             });
         }
     }

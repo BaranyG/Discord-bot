@@ -3,11 +3,11 @@ const http     = require('http');
 const request  = require('request');
 const Discord  = require('discord.js');
 const client   = require('./index.js');
-module.exports =  {
+module.exports = {
     name: 'functions',
-    description: 'Itt van az összes saját funkció',
+    description: 'Itt van az összes saját függvény',
     //Async (JSON) fájl beolvasás
-    jsonReader: function(filepath, callback){
+    jsonReader: async function(filepath, callback){
         fs.readFile(filepath, 'utf8', (err, data) => {
             if (err) {
                 console.log("Error #F1: File read failed:");
@@ -139,7 +139,15 @@ module.exports =  {
         else return false;
     },
 
-    WorldTime_API: function(callback){
+    BIOSdate: function() {
+        let myDate = new Date();
+        let month = myDate.getMonth()+1;
+        let date = myDate.getFullYear() + "." + month + "." + myDate.getDate();
+        date = this.getDate(date);
+        return date;
+    },
+
+    WorldTime_API: async function(callback){
         try{
             request('http://worldtimeapi.org/api/timezone/Europe/Budapest',
             {json: true}, (err, res, body) => {
@@ -163,12 +171,106 @@ module.exports =  {
         }
     },
 
-    BIOSdate: function() {
-        let myDate = new Date();
-        let month = myDate.getMonth()+1;
-        let date = myDate.getFullYear() + "." + month + "." + myDate.getDate();
-        date = this.getDate(date);
-        return date;
+    roleAdd: async function() {
+        try{
+            this.WorldTime_API((err, APIdate) => {
+                if(err){
+                    console.log(err);
+                    let BIOSdate = this.BIOSdate();
+                    let BIOStoday = this.getBirthday(BIOSdate);
+                    this.dateCompare(BIOStoday, BIOSdate);
+                }
+                let APItoday = this.getBirthday(APIdate);
+                this.dateCompare(APItoday, APIdate);
+            });
+        }catch(error){
+            console.log(error);
+            return;
+        }
+    },
+
+    dateCompare: function(today, date){
+        try{
+            var birthdayTrue = false;
+            this.jsonReader("./database.json", (err, database) => {
+                if(err) { console.log(err); return; }
+
+                for(let i = 0; i < database.Tagok.length; i++){
+                    //Információk
+                    if(database.Tagok[i].ServerID === undefined) continue;
+                    let birthday = this.getBirthday(database.Tagok[i].Birthday);
+                    let szerver = client.guilds.cache.get(database.Tagok[i].ServerID);
+                    let tag = szerver.members.cache.get(database.Tagok[i].UserID);
+                    
+                    var tarsalgo;
+                    let temp = database.Szerverek.find(sz => {
+                        if(sz.ServerID == database.Tagok[i].ServerID){
+                            tarsalgo = szerver.channels.cache.get(sz.BotChannelID);
+                            return true;
+                        }
+                    });
+
+                    //Üzenet
+                    let exampleEmbed = new Discord.MessageEmbed()
+                    .setColor('#f1c40f')
+                    .setTitle(`Boldog születésnapot ${tag.user.username}!`)
+                    .setAuthor('Születésnaposunk van', 'https://i.imgur.com/2KrTApE.png')
+                    .setThumbnail(`${tag.user.displayAvatarURL()}`)
+                    .setTimestamp()
+                    .setFooter('Birthday', 'https://i.imgur.com/2KrTApE.png');
+                    
+                    let jelenEv = date.slice(0, 4);
+                    console.log(today, birthday);
+
+                    //Ha nem ma van a szülinapja ...
+                    if(today !== birthday){
+                        //LEHET SZÖKŐNAPON VAN VALAKI SZÜLINAPJA
+                        //Szökőnap helyett 28-án is megadja a rolet.
+                        if(birthday === "2.29" && today === "2.28" && jelenEv % 4 != 0){
+                            birthdayTrue = true;
+                            //Ha van év írja a kort.
+                            if (this.hasYear(database.Tagok[i].Birthday)){
+                                let szulEv = database.Tagok[i].Birthday.slice(0, 4);
+                                let jelenEv = date.slice(0, 4);
+                                let kor = jelenEv - szulEv;
+                                exampleEmbed.setTitle(`Boldog ${kor}. születésnapot ${tag.user.username}!`);
+                                tarsalgo.send(`Boldog ${kor}. születésnapot kívánok! <@${tag.user.id}`);
+                                tarsalgo.send(exampleEmbed);
+                            }
+                            //Ha nincs év nem írja a kort.
+                            else{
+                                tarsalgo.send(`Boldog születésnapot kívánok <@${tag.user.id}>!`);
+                                tarsalgo.send(exampleEmbed);
+                            }
+                        }
+                    }
+                    //Ha szülinapja van illetőnek megadja a rolet, ha még nincs meg neki.
+                    else if(today === birthday){
+                        birthdayTrue = true;
+                        //Ha van év írja a kort.
+                        if (this.hasYear(database.Tagok[i].Birthday)){
+                            let szulEv = database.Tagok[i].Birthday.slice(0, 4);
+                            let jelenEv = date.slice(0, 4);
+                            let kor = jelenEv - szulEv;
+                            exampleEmbed.setTitle(`Boldog ${kor}. születésnapot ${tag.user.username}!`);
+                            tarsalgo.send(`Boldog ${kor}. születésnapot kívánok <@${tag.user.id}>!`);
+                            tarsalgo.send(exampleEmbed);
+                        }
+                        //Ha nincs év nem írja a kort.
+                        else{
+                            tarsalgo.send(`Boldog születésnapot kívánok <@${tag.user.id}>!`);
+                            tarsalgo.send(exampleEmbed);
+                        }
+                    }
+                }
+                //Ha volt ma szülinapos, 24 óra múlva fusson le legközelebb
+                if(birthdayTrue) setTimeout(() => this.roleAdd(), 1000 * 60 * 60 * 24);
+                //Ha nem volna ma szülinapos, 3 óra múlva fusson le legközelebb
+                else setTimeout(() => this.roleAdd(), 1000 * 60 * 60 * 3);
+            });
+        }catch(error) {
+            console.log(error)
+        }
     },
 
     httpCreateServer: http.createServer(function(request,response){
@@ -201,145 +303,136 @@ module.exports =  {
 
     emoji: function emoji (id) { return client.emojis.cache.get(id).toString(); },
 
-    roleAdd: function() {
-        try{
-            this.WorldTime_API((err, APIdate) =>{
+    serverCompare: function(){
+        return new Promise((resolve, reject) => {
+            let guilds = client.guilds.cache.map(guild => guild);
+            this.jsonReader('database.json', (err, database) => {
                 if(err){
-                    console.log(err);
-                    let BIOSdate = this.BIOSdate();
-                    let BIOStoday = this.getBirthday(BIOSdate);
-                    this.dateCompare(BIOStoday, BIOSdate);
+                    console.error("Error: serverCompare - Reading file:", err);
+                    return;
                 }
-                let APItoday = this.getBirthday(APIdate);
-                this.dateCompare(APItoday, APIdate);
+                let Szerverek = []
+                for(let i = 0; i < client.guilds.cache.size; i++){
+                    let Szerver = {
+                        ServerID: guilds[i].id,
+                        ServerName: guilds[i].name
+                    }
+                    Szerverek.push(Szerver);
+                }
+                let ids = new Set(database.Szerverek.map(d => d.ServerID));
+                let merged = [...database.Szerverek, ...Szerverek.filter(g => !ids.has(g.ServerID))];
+                database.Szerverek = merged;
+                //console.log("servercompare: ", database);
+                fs.writeFile('database.json', JSON.stringify(database, null, 4), function(err){
+                    if(err){
+                        console.error("Error: serverCompare - Writing file", err);
+                        reject(err);
+                    }
+                    resolve("resolved");
+                });
             });
-        }catch(error){
-            console.log(error);
-            return;
-        }
+        });
     },
 
-    serverCompare: function(){
-        let guilds = client.guilds.cache.map(guild => guild);
-        this.jsonReader('database.json', (err, database) => {
-            if(err){
-                console.error("Error: Index-ready - Reading file:", err);
-                return;
-            }
-            let Szerverek = []
-            for(let i = 0; i < client.guilds.cache.size; i++){
-                let Szerver = {
-                    ServerID: guilds[i].id,
-                    ServerName: guilds[i].name
-                }
-                Szerverek.push(Szerver);
-            }
-            let ids = new Set(database.Szerverek.map(d => d.ServerID));
-            let merged = [...database.Szerverek, ...Szerverek.filter(g => !ids.has(g.ServerID))]
-            database.Szerverek = merged;
-            fs.writeFile('database.json', JSON.stringify(database, null, 4), function(err){
+    userCompare: function(){
+        return new Promise((resolve, reject) => {
+            let users = client.users.cache.map(user => user);
+            this.jsonReader('database.json', (err, database) => {
                 if(err){
-                    console.error("Error: Index-ready - Writing file", err);
+                    console.error("Error: userCompare - Reading file:", err);
+                    return;
+                }
+                let Tagok = []
+                for(let i = 0; i < client.users.cache.size; i++){
+                    if(users[i].bot) continue;
+                    let Tag = {
+                        UserID: users[i].id,
+                        Username: users[i].username
+                    }
+                    Tagok.push(Tag);
+                }
+                let ids = new Set(database.Tagok.map(d => d.UserID));
+                let merged = [...database.Tagok, ...Tagok.filter(g => !ids.has(g.UserID))];
+                database.Tagok = merged;
+                //console.log("usercompare:", database);
+                fs.writeFile('database.json', JSON.stringify(database, null, 4), function(err){
+                    if(err){
+                        console.error("Error: userCompare - Writing file", err);
+                        reject(err);
+                    }
+                    resolve("resolved");
+                });
+            });
+        });
+    },
+
+    check: function (){
+        return new Promise((resolve, reject) => {
+            this.jsonReader("./database.json", (err, database) => {
+                if(err) { console.log(err); return; }
+                try{
+                    for(let i = 0; i < database.Tagok.length; i++){
+                        if(database.Tagok[i].ServerID===undefined) continue;
+                        let szerver = client.guilds.cache.get(database.Tagok[i].ServerID);
+                        let tag = szerver.members.cache.get(database.Tagok[i].UserID);
+                        
+                        if(tag.user.username !== database.Tagok[i].Username){
+                            database.Tagok[i].Username = tag.user.username;
+                            fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
+                                if(err){
+                                    hibaUzenetDelete("Error: Username - Writing file ");
+                                    console.log("Error: Username - Writing file", err);
+                                    reject(err);
+                                }
+                            });
+                        }
+                    }
+                    for(let i = 0; i < database.Szerverek.length; i++){
+                        let szerver = client.guilds.cache.get(database.Szerverek[i].ServerID);
+                        let botszoba = szerver.channels.cache.get(database.Szerverek[i].BotChannelID);
+                        
+                        if(botszoba===undefined) continue;
+                        if(szerver.name !== database.Szerverek[i].ServerName || botszoba.name !== database.Szerverek[i].BotChannelName){
+                            database.Szerverek[i].ServerName = szerver.name;
+                            database.Szerverek[i].BotChannelName = botszoba.name;
+                            fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
+                                if(err){ 
+                                    hibaUzenetDelete("Error: ServerID - Writing file ");
+                                    console.log("Error: ServerID - Writing file", err);
+                                    reject(err); 
+                                }
+                                resolve("resolved");
+                            });
+                        }
+                    }
+                    resolve("resolved");
+                }catch(err){
+                    console.log(err);
                     return;
                 }
             });
         });
     },
 
-    dateCompare: function(today, date){
-        try{
-            var birthdayTrue = false;
-            this.jsonReader("./database.json", (err, database) => {
-                if(err) { console.log(err); return; }
-                try{
-                    for(let i = 0; i < database.Tagok.length; i++){
-                        //Információk
-                        let birthday = this.getBirthday(database.Tagok[i].Birthday);
-                        let szerver = client.guilds.cache.get(database.Tagok[i].ServerID);
-                        let tag = szerver.members.cache.get(database.Tagok[i].UserID);
-                        var tarsalgo;
-                        for(let j = 0; j < database.Szerverek.length; j++){
-                            if(szerver == database.Szerverek[j].ServerID)
-                                tarsalgo = szerver.channels.cache.get(database.Szerverek[j].BotChannelID);
-                                break;
-                        }
-                        //Ha a felhasználó (jelenlegi) neve nem egyezik az adatbáziséval, írja felül az adatbázist az újjal.
-                        if(tag.user.username !== database.Tagok[i].Username){
-                            database.Tagok[i].Username = tag.user.username;
-                            fs.writeFile('./database.json', JSON.stringify(database, null, 4), function(err){
-                                if(err){ 
-                                    hibaUzenetDelete("Error: Username - Writing file #2"); 
-                                    console.log("Error: Username - Writing file #2", err); 
-                                    return; 
-                                }
-                                return;
-                            });
-                        }
-                        
+    ready: async function(){
+        let t0 = performance.now();
+        let t1 = performance.now();
+        console.log((t1-t0).toFixed(2) + " milliseconds.");
 
-                        //Üzenet
-                        let exampleEmbed = new Discord.MessageEmbed()
-                        .setColor('#f1c40f')
-                        .setTitle(`Boldog születésnapot ${tag.user.username}!`)
-                        .setAuthor('Születésnaposunk van', 'https://i.imgur.com/2KrTApE.png')
-                        .setThumbnail(`${tag.user.displayAvatarURL()}`)
-                        .setTimestamp()
-                        .setFooter('Birthday', 'https://i.imgur.com/2KrTApE.png');
-                        
-                        let jelenEv = date.slice(0, 4);
-                        console.log(today, birthday);
+        await this.serverCompare();
+        t1 = performance.now();
+        console.log((t1-t0).toFixed(2) + " milliseconds.");
 
-                        //Ha nem ma van a szülinapja ...
-                        if(today !== birthday){
-                            //LEHET SZÖKŐNAPON VAN VALAKI SZÜLINAPJA
-                            //Szökőnap helyett 28-án is megadja a rolet.
-                            if(birthday === "2.29" && today === "2.28" && jelenEv % 4 != 0){
-                                birthdayTrue = true;
-                                //Ha van év írja a kort.
-                                if (this.hasYear(database.Tagok[i].Birthday)){
-                                    let szulEv = database.Tagok[i].Birthday.slice(0, 4);
-                                    let jelenEv = date.slice(0, 4);
-                                    let kor = jelenEv - szulEv;
-                                    exampleEmbed.setTitle(`Boldog ${kor}. születésnapot ${tag.user.username}!`);
-                                    tarsalgo.send(`Boldog ${kor}. születésnapot kívánok! <@${tag.user.id}`);
-                                    tarsalgo.send(exampleEmbed);
-                                }
-                                //Ha nincs év nem írja a kort.
-                                else{
-                                    tarsalgo.send(`Boldog születésnapot kívánok <@${tag.user.id}>!`);
-                                    tarsalgo.send(exampleEmbed);
-                                }
-                            }
-                        }
-                        //Ha szülinapja van illetőnek megadja a rolet, ha még nincs meg neki.
-                        else if(today === birthday){
-                            birthdayTrue = true;
-                            //Ha van év írja a kort.
-                            if (this.hasYear(database.Tagok[i].Birthday)){
-                                let szulEv = database.Tagok[i].Birthday.slice(0, 4);
-                                let jelenEv = date.slice(0, 4);
-                                let kor = jelenEv - szulEv;
-                                exampleEmbed.setTitle(`Boldog ${kor}. születésnapot ${tag.user.username}!`);
-                                tarsalgo.send(`Boldog ${kor}. születésnapot kívánok <@${tag.user.id}>!`);
-                                tarsalgo.send(exampleEmbed);
-                            }
-                            //Ha nincs év nem írja a kort.
-                            else{
-                                tarsalgo.send(`Boldog születésnapot kívánok <@${tag.user.id}>!`);
-                                tarsalgo.send(exampleEmbed);
-                            }
-                        }
-                    }
-                }catch(err) {
-                    console.log(err);
-                }
-                //Ha volt ma szülinapos, 24 óra múlva fusson le legközelebb
-                if(birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 24);
-                //Ha nem volna ma szülinapos, 3 óra múlva fusson le legközelebb
-                else if(!birthdayTrue) setTimeout(this.roleAdd, 1000 * 60 * 60 * 3);
-            });
-        }catch(error) {
-            console.log(error)
-        }
+        await this.userCompare();
+        t1 = performance.now();
+        console.log((t1-t0).toFixed(2) + " milliseconds.");
+
+        await this.roleAdd();
+        t1 = performance.now();
+        console.log((t1-t0).toFixed(2) + " milliseconds.");
+
+        await this.check();
+        t1 = performance.now();
+        console.log((t1-t0).toFixed(2) + " milliseconds.");
     }
 }

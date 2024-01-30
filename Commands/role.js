@@ -74,10 +74,10 @@ module.exports = {
 
         function hibaUzenetDelete(uzenet){
             message.reply(uzenet).then(msg => {
-                msg.delete({ timeout: 1000 * 60 * 2 });
+                setTimeout(() => msg.delete(), 1000 * 60 * 60);
             });
             message.fetch(message.id).then(msg => {
-                msg.delete({ timeout: 1000 * 60 * 2 });
+                setTimeout(() => msg.delete(), 1000 * 60 * 60);
             });
         }
     }
